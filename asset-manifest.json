@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/react-example-repo-filtering/static/css/main.ef6329c9.chunk.css",
+    "main.js": "/react-example-repo-filtering/static/js/main.c4708637.chunk.js",
+    "main.js.map": "/react-example-repo-filtering/static/js/main.c4708637.chunk.js.map",
+    "runtime-main.js": "/react-example-repo-filtering/static/js/runtime-main.49a9b4c1.js",
+    "runtime-main.js.map": "/react-example-repo-filtering/static/js/runtime-main.49a9b4c1.js.map",
+    "static/js/2.2192039b.chunk.js": "/react-example-repo-filtering/static/js/2.2192039b.chunk.js",
+    "static/js/2.2192039b.chunk.js.map": "/react-example-repo-filtering/static/js/2.2192039b.chunk.js.map",
+    "index.html": "/react-example-repo-filtering/index.html",
+    "precache-manifest.20ca5849afeb01cbceaa8f5d1233515f.js": "/react-example-repo-filtering/precache-manifest.20ca5849afeb01cbceaa8f5d1233515f.js",
+    "service-worker.js": "/react-example-repo-filtering/service-worker.js",
+    "static/css/main.ef6329c9.chunk.css.map": "/react-example-repo-filtering/static/css/main.ef6329c9.chunk.css.map",
+    "static/js/2.2192039b.chunk.js.LICENSE.txt": "/react-example-repo-filtering/static/js/2.2192039b.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.49a9b4c1.js",
+    "static/js/2.2192039b.chunk.js",
+    "static/css/main.ef6329c9.chunk.css",
+    "static/js/main.c4708637.chunk.js"
+  ]
+}
