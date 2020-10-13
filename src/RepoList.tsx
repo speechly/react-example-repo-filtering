@@ -9,7 +9,7 @@ type Props = {
 export const RepoList = React.memo(
   ({ repos }: Props): JSX.Element => {
     return (
-      <div>
+      <div className="block">
         <table>
           <thead>
             <tr>
