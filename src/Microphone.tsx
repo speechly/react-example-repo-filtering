@@ -34,7 +34,7 @@ export const Microphone = React.memo(
     }
 
     return (
-      <div>
+      <div className="block">
         <button onClick={onRecord} disabled={!enabled}>
           {text}
         </button>
