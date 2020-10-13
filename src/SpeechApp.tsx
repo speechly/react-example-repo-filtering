@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SpeechSegment, useSpeechContext } from "@speechly/react-client";
 
-import { repositories } from "./data";
+import { repositories, Repository } from "./data";
+import { Filter, filterRepos } from "./filter";
 import {
   IntentType,
   SortEntityType,
@@ -14,6 +15,9 @@ import { RepoList } from "./RepoList";
 import { Microphone } from "./Microphone";
 
 export const SpeechApp: React.FC = (): JSX.Element => {
+  const [filter, setFilter] = useState<Filter>(defaultFilter);
+  const [repos, setRepos] = useState<Repository[]>(repositories);
+
   const { toggleRecording, speechState, segment } = useSpeechContext();
 
   useEffect(() => {
@@ -21,7 +25,13 @@ export const SpeechApp: React.FC = (): JSX.Element => {
       return;
     }
 
-    parseSegment(segment);
+    const nextFilter = {
+      ...filter,
+      ...parseSegment(segment),
+    };
+
+    setFilter(nextFilter);
+    setRepos(filterRepos(repositories, nextFilter));
   }, [segment]);
 
   return (
@@ -31,27 +41,43 @@ export const SpeechApp: React.FC = (): JSX.Element => {
         state={speechState}
         onRecord={toggleRecording}
       />
-      <RepoList repos={repositories} />
+      <RepoList repos={repos} />
     </div>
   );
 };
 
-function parseSegment(segment: SpeechSegment) {
+const emptyFilter: Filter = {};
+const defaultFilter: Filter = {
+  languages: [],
+  sortBy: SortEntityType.Name,
+};
+
+function parseSegment(segment: SpeechSegment): Filter {
   const intent = parseIntent(segment);
 
   switch (intent) {
     case IntentType.Filter:
       const languages = parseLanguageEntity(segment);
-      console.log("Filtering by languages", languages);
-      break;
+
+      if (languages.length === 0) {
+        return emptyFilter;
+      }
+
+      return {
+        languages,
+      };
     case IntentType.Sort:
       const sortBy = parseSortEntity(segment);
       if (sortBy !== SortEntityType.Unknown) {
-        console.log("Sorting by field", sortBy);
+        return {
+          sortBy,
+        };
       }
-      break;
+
+      return emptyFilter;
     case IntentType.Reset:
-      console.log("Resetting the filters");
-      break;
+      return defaultFilter;
+    default:
+      return emptyFilter;
   }
 }
