@@ -32,6 +32,7 @@ export const SpeechApp: React.FC = (): JSX.Element => {
 
     setFilter(nextFilter);
     setRepos(filterRepos(repositories, nextFilter));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [segment]);
 
   return (
