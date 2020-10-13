@@ -1,5 +1,6 @@
 {
   "name": "voice-repo-filtering",
+  "homepage": "https://speechly.github.io/react-example-repo-filtering",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
