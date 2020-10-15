@@ -1,8 +1,8 @@
-# <a href="https://speechly.com/"><img src="https://www.speechly.com/images/logo.png" height="100" alt="Speechly"></a>
+# <a href="https://www.speechly.com/"><img src="https://www.speechly.com/images/logo.png" height="100" alt="Speechly"></a>
 
 # Speechly React example
 
-This repository contains an example app for filtering data using [Speechly](https://speechly.com) React client.
+This repository contains an example app for filtering data using the [Speechly](https://www.speechly.com) React client.
 
 Built with:
 
