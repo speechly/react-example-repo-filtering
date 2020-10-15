@@ -6,14 +6,15 @@ Prerequisites:
 
 Since we'll be using [create-react-app](https://create-react-app.dev/docs/getting-started) for this tutorial, we'll need the following tools:
 
-* Node.js 8.10+
-* npm 5.2+
+- Node.js 8.10+
+- npm 5.2+
 
 Note that this tutorial also uses TypeScript, so feel free to check out [TypeScript documentation](https://www.typescriptlang.org/docs) if you're not familiar with it.
 
 ## 1. Creating an app
 
 Let's get started by creating an app and installing its dependencies:
+
 ```sh
 npx create-react-app speechly-voice-filter --typescript
 cd speechly-voice-filter
@@ -27,6 +28,7 @@ Now that you've created the app, you can check it out by running `npm start` - i
 Since we are building a filtering app, let's add some data to filter and layout to display it.
 
 To make it simple, our data source will be just a static array with some popular repositories on GitHub. Let's add the following code and save it as `src/data.ts`:
+
 ```ts
 export type Repository = {
   name: string;
@@ -144,6 +146,7 @@ export const repositories: Repository[] = [
 ```
 
 We can display this data in a simple table, so let's add a component for that under `src/RepoList.tsx`:
+
 ```tsx
 import React from "react";
 
@@ -153,31 +156,29 @@ type Props = {
   repos: Repository[];
 };
 
-export const RepoList = React.memo(
-  ({ repos }: Props): JSX.Element => {
-    return (
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Language</th>
-              <th>Description</th>
-              <th>Followers</th>
-              <th>Stars</th>
-              <th>Forks</th>
-            </tr>
-          </thead>
-          <tbody>
-            {repos.map((repo) => (
-              <RepoRow repo={repo} key={repo.name} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-);
+export const RepoList = ({ repos }: Props): JSX.Element => {
+  return (
+    <div className="block">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Language</th>
+            <th>Description</th>
+            <th>Followers</th>
+            <th>Stars</th>
+            <th>Forks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {repos.map((repo) => (
+            <RepoRow repo={repo} key={repo.name} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const RepoRow = React.memo(
   ({ repo }: { repo: Repository }): JSX.Element => {
@@ -196,6 +197,7 @@ const RepoRow = React.memo(
 ```
 
 In order to show the table, we'll need to render it. We could render our table right in our top-level `App` component, but let's instead use a top-level component for our app under `src/SpeechApp.tsx`, it will come in handy later on:
+
 ```tsx
 import React from "react";
 
@@ -213,6 +215,7 @@ export const SpeechApp: React.FC = (): JSX.Element => {
 ```
 
 Now let's add it to our top-level component:
+
 ```tsx
 import React from "react";
 import { SpeechProvider } from "@speechly/react-client";
@@ -241,11 +244,13 @@ Go to https://speechly.com/dashboard and login (or sign up if you haven't yet) a
 ![A hello world configuration](./docs/hello-world-config.png)
 
 Once you have your Speechly app deployed, let's integrate it. Start by installing Speechly React client:
+
 ```sh
 npm i --save @speechly/react-client
 ```
 
 The client exposes a context provider and a hook that allows you to consume that context. Let's add the context provider to `src/App.tsx` - make sure you provide the `App ID` of your Speechly app as a property for `SpeechProvider`!
+
 ```tsx
 import React from "react";
 import { SpeechProvider } from "@speechly/react-client";
@@ -266,6 +271,7 @@ export default App;
 ```
 
 Next let's add some code to act as the microphone button. Also, it would be nice to see what we are saying, so let's also render the transcript next to the button for some feedback. Let's make that a separate component and save it as `src/Microphone.tsx`:
+
 ```tsx
 import React from "react";
 import {
@@ -344,7 +350,10 @@ const Word = React.memo(
 );
 ```
 
+As you can see this component renders a button that calls the `onRecord` callback passed in the properties and uses the state of Speechly client to determine when to enable the button and which text to use as its label. In addition to that the component also renders the transcript of the phrase by assembling individual transcripted words from a segment (check out [this article in our documentation](https://www.speechly.com/docs/speechly-api/#understanding-server-responses) for more information about how SLU API works). Since a word can be either tentative (i.e. its value can change as the API receives more audio data) or final, we use bold text to highlight final words.
+
 One more step - we'd need to render our component and hook it up to the API. Let's add it to our `SpeechApp` component:
+
 ```tsx
 import React from "react";
 import { useSpeechContext } from "@speechly/react-client";
@@ -370,19 +379,22 @@ export const SpeechApp: React.FC = (): JSX.Element => {
 };
 ```
 
+Here we use the other main part of Speechly React client - a custom hook that consumes the state preserved in `SpeechProvider`. Feel free to check the [API documentation of React client](https://github.com/speechly/react-client/blob/master/docs/modules/_index_d_.md) to see what other properties are returned by the hook.
+
 Now you can go ahead and try talking to the app and see what you get back in the transcript. Congratulations, you've just integrated Speechly into the app.
 
-However, we still need to implement the filtering functionality.
+However, we still need to implement the filtering functionality, so let's go ahead and update our Speechly app configuration to support that.
 
 ## 4. Configuring Speechly app
 
 Now that we've integrated the API into the app it's time to make our Speechly app useful. Let's add a couple of simple commands for manipulating the data we see in the table:
 
-* A command to filter by programming language, e.g. when a user says "Show me TypeScript repos" the app will only show repos with that specific language
-* A command to sort the results in a specific order, e.g. "Sort the results by forks" will sort the repos by the amount of forks it has.
-* A command to reset the filters, e.g. "Reset the filters to default" will remove the language filter and reset the sorting to some default.
+- A command to filter by programming language, e.g. when a user says "Show me TypeScript repos" the app will only show repos with that specific language
+- A command to sort the results in a specific order, e.g. "Sort the results by forks" will sort the repos by the amount of forks it has.
+- A command to reset the filters, e.g. "Reset the filters to default" will remove the language filter and reset the sorting to some default.
 
 Let's go back to [Speechly dashboard](https://speechly.com/dashboard) and update the configuration of our app with the following:
+
 ```
 # Which languages we can filter by
 languages = [
@@ -435,76 +447,17 @@ results = [
 # etc.
 *reset [reset | remove] {[the | all]} {filters} {to default}
 ```
-Don't forget to add `sort`, `filter` and `reset` as intents and `languages` and `sort_fields` as entities. You can also read more about how to configure your Speechly application [in our documentation](https://www.speechly.com/docs/slu-examples/).
+
+Don't forget to add `sort`, `filter` and `reset` as intents and `languages` and `sort_fields` as entities!
+
+As you can see from the comments, this configuration will make our Speechly app understand the commands we need and properly detect entities and intents. Keep in mind, that the cool part is that the model will also be able to understand the variations of commands that are not explicitly defined in our configuration. The same also applies to entities - the app won't be limited to only detecting "Go", "TypeScript" and "Python" as options for the language, but other words as well, which will be roughly in the same place in a pharse (e.g. you could try saying "Show me all Javascript repos"). However, with words that are very specific to domain like programming language names it's always a good idea to list them all in your configuration, otherwise they might be mistaken for some regular words, e.g. the API might not properly detect "Rust" as a programming language if you say "Show me all Rust repositories", because it would think that you meant "rust" as that thing that destroys metals. You can read more about how to configure Speechly applications [in our documentation](https://www.speechly.com/docs/slu-examples/).
 
 Once you've deployed your new version of the Speechly app, let's continue to parsing the results.
 
 ## 5. Parsing intents and entities
 
-Now that we've trained a version of Speechly app with proper entities and intents, let's parse the results.
+Now that we've trained a version of Speechly app with proper entities and intents, let's parse the results. First let's add our parsing logic to `src/parser.ts`:
 
-We want to parse the segment that is returned by `useSpeechContext`, which contains entities and intents returned from the API, so let's use a hook for that in our `SpeechApp`:
-```tsx
-import React, { useEffect } from "react";
-import { SpeechSegment, useSpeechContext } from "@speechly/react-client";
-
-import { repositories } from "./data";
-import {
-  IntentType,
-  SortEntityType,
-  parseIntent,
-  parseLanguageEntity,
-  parseSortEntity,
-} from "./parser";
-
-import { RepoList } from "./RepoList";
-import { Microphone } from "./Microphone";
-
-export const SpeechApp: React.FC = (): JSX.Element => {
-  const { toggleRecording, speechState, segment } = useSpeechContext();
-
-  useEffect(() => {
-    if (segment === undefined) {
-      return;
-    }
-
-    parseSegment(segment);
-  }, [segment]);
-
-  return (
-    <div>
-      <Microphone
-        segment={segment}
-        state={speechState}
-        onRecord={toggleRecording}
-      />
-      <RepoList repos={repositories} />
-    </div>
-  );
-};
-
-function parseSegment(segment: SpeechSegment) {
-  const intent = parseIntent(segment);
-
-  switch (intent) {
-    case IntentType.Filter:
-      const languages = parseLanguageEntity(segment);
-      console.log("Filtering by languages", languages);
-      break;
-    case IntentType.Sort:
-      const sortBy = parseSortEntity(segment);
-      if (sortBy !== SortEntityType.Unknown) {
-        console.log("Sorting by field", sortBy);
-      }
-      break;
-    case IntentType.Reset:
-      console.log("Resetting the filters");
-      break;
-  }
-}
-```
-
-But we're also importing some code from `parser`, which we haven't added yet, so let's do that - add the following code to `src/parser.ts`:
 ```ts
 import { SpeechSegment } from "@speechly/react-client";
 
@@ -570,11 +523,76 @@ export function parseSortEntity(segment: SpeechSegment): SortEntityType {
 }
 ```
 
-Now every time we get a new `segment` from the client, we're going to parse our sorting and filtering entities out of it. Right now we are just logging them, but to use them we'll have to add some filters, so let's continue with that.
+Here we define a couple of functions to parse intents and different entity types from a `SpeechSegment`, which is returned by `useSpeechContext`. As you can see, the code is pretty straightforward, most of it is actually just listing which intents and entities we expect and defining them as enumerations, since it's always a good idea to check the results returned from API against a pre-defined list of allowed values to avoid bugs. Another good idea is to make sure we use consistent case (in this case by casting the results to lower case) to avoid false negatives when e.g. comparing `STARS` to `stars`.
+
+Now that we have our code for parsing the results from a segment, time to use it. Let's update our `SpeechApp` and add some code that calls our parser:
+
+```tsx
+import React, { useEffect } from "react";
+import { SpeechSegment, useSpeechContext } from "@speechly/react-client";
+
+import { repositories } from "./data";
+import {
+  IntentType,
+  SortEntityType,
+  parseIntent,
+  parseLanguageEntity,
+  parseSortEntity,
+} from "./parser";
+
+import { RepoList } from "./RepoList";
+import { Microphone } from "./Microphone";
+
+export const SpeechApp: React.FC = (): JSX.Element => {
+  const { toggleRecording, speechState, segment } = useSpeechContext();
+
+  useEffect(() => {
+    if (segment === undefined) {
+      return;
+    }
+
+    parseSegment(segment);
+  }, [segment]);
+
+  return (
+    <div>
+      <Microphone
+        segment={segment}
+        state={speechState}
+        onRecord={toggleRecording}
+      />
+      <RepoList repos={repositories} />
+    </div>
+  );
+};
+
+function parseSegment(segment: SpeechSegment) {
+  const intent = parseIntent(segment);
+
+  switch (intent) {
+    case IntentType.Filter:
+      const languages = parseLanguageEntity(segment);
+      console.log("Filtering by languages", languages);
+      break;
+    case IntentType.Sort:
+      const sortBy = parseSortEntity(segment);
+      if (sortBy !== SortEntityType.Unknown) {
+        console.log("Sorting by field", sortBy);
+      }
+      break;
+    case IntentType.Reset:
+      console.log("Resetting the filters");
+      break;
+  }
+}
+```
+
+Here we define a `parseSegment` function that is called every time a segment changes by using React's `useEffect` hook. Since segment might come as `undefined` (this happens after the the user stops speaking and the API sends it's final response), we want to check for that before trying to parse it. The function checks for the intent and then calls the appropriate entity parser (or no entity parser at all if the intent was to reset the filters). For now we are just going to log the results of the parser, but to use them we'll have to add some filters. Let's continue with that!
 
 ## 6. Adding and applying filters
 
 In order to apply filters, we'd need to implement some filtering logic, so let's do just that and add it as `src/filter.ts`:
+
 ```ts
 import { Repository } from "./data";
 import { SortEntityType } from "./parser";
@@ -634,7 +652,10 @@ function compareNumber(left: number, right: number) {
 }
 ```
 
-But we also need to call the filtering function when we get new results from the API, so let's also update our `SpeechApp` to do that:
+Here we define a `Filter` type that contains a list of languages to display and the field to sort by. We also define a function `filterRepos` that takes a list of repositories and a filter and returns a new list of repositories filtered and sorted according to that filter.
+
+Now we need to call the filtering function when we get new results from the API, so let's also update our `SpeechApp` to do that:
+
 ```tsx
 import React, { useEffect, useState } from "react";
 import { SpeechSegment, useSpeechContext } from "@speechly/react-client";
@@ -654,9 +675,7 @@ import { Microphone } from "./Microphone";
 
 export const SpeechApp: React.FC = (): JSX.Element => {
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const [repos, setRepos] = useState<Repository[]>(
-    filterRepos(repositories, defaultFilter)
-  );
+  const [repos, setRepos] = useState<Repository[]>(repositories);
 
   const { toggleRecording, speechState, segment } = useSpeechContext();
 
@@ -671,7 +690,8 @@ export const SpeechApp: React.FC = (): JSX.Element => {
     };
 
     setFilter(nextFilter);
-    setRepos(filterRepos(repositories, filter));
+    setRepos(filterRepos(repositories, nextFilter));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [segment]);
 
   return (
@@ -722,6 +742,8 @@ function parseSegment(segment: SpeechSegment): Filter {
   }
 }
 ```
+
+Here we use React's `useState` hook to create a couple of stateful variables for storing filtered results and last filters (since you can append them by saying "Show me all Go repos" first and then following up with "Sort by start"). Every time we get new state of `segment` from the API, we call our `parseSegment` to parse the filters from it and then append those filters to the ones we've saved in the state. Then we also apply new filters to the list of repositories before passing them on to rendering.
 
 And that's it! Now you can go ahead and try it out yourself - you can filter the repos by language, apply some sorting order and reset the filters.
 
