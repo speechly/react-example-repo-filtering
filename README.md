@@ -2,15 +2,15 @@
 
 # Speechly React example
 
-This repository contains an example app for filtering data using [Speechly](https://speechly.com) React client.
+This repository contains an example app for filtering data using [Speechly](https://speechly.com) React client
 
 Built with:
 
-- [create-react-app](https://github.com/facebook/create-react-app).
+- [create-react-app](https://github.com/facebook/create-react-app)
 - [TypeScript](https://www.typescriptlang.org)
 - [@speechly/react-client](https://github.com/speechly/react-client)
 
-Please check out [the tutorial](TUTORIAL.md) to learn how to build this yourself. You can also check out the hosted version of this app at https://speechly.github.io/react-example-repo-filtering/.
+Please check out [Speechly documentation](https://www.speechly.com/docs/client-libraries/react-client/) for a tutorial that explains how to build this app. You can also check out the hosted version of this app at https://speechly.github.io/react-example-repo-filtering/.
 
 ## Running locally
 
